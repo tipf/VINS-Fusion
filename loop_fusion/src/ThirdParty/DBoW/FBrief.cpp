@@ -6,7 +6,7 @@
  * License: see the LICENSE.txt file
  *
  */
- 
+
 #include <vector>
 #include <string>
 #include <sstream>
@@ -19,16 +19,16 @@ namespace DBoW2 {
 
 // --------------------------------------------------------------------------
 
-void FBrief::meanValue(const std::vector<FBrief::pDescriptor> &descriptors, 
+void FBrief::meanValue(const std::vector<FBrief::pDescriptor> &descriptors,
   FBrief::TDescriptor &mean)
 {
   mean.reset();
-  
+
   if(descriptors.empty()) return;
-  
+
   const int N2 = descriptors.size() / 2;
   const int L = descriptors[0]->size();
-  
+
   vector<int> counters(L, 0);
 
   vector<FBrief::pDescriptor>::const_iterator it;
@@ -40,24 +40,24 @@ void FBrief::meanValue(const std::vector<FBrief::pDescriptor> &descriptors,
       if(desc[i]) counters[i]++;
     }
   }
-  
+
   for(int i = 0; i < L; ++i)
   {
     if(counters[i] > N2) mean.set(i);
   }
-  
+
 }
 
 // --------------------------------------------------------------------------
-  
-double FBrief::distance(const FBrief::TDescriptor &a, 
+
+double FBrief::distance(const FBrief::TDescriptor &a,
   const FBrief::TDescriptor &b)
 {
   return (double)DVision::BRIEF::distance(a, b);
 }
 
 // --------------------------------------------------------------------------
-  
+
 std::string FBrief::toString(const FBrief::TDescriptor &a)
 {
   // from boost::bitset
@@ -67,7 +67,7 @@ std::string FBrief::toString(const FBrief::TDescriptor &a)
 }
 
 // --------------------------------------------------------------------------
-  
+
 void FBrief::fromString(FBrief::TDescriptor &a, const std::string &s)
 {
   // from boost::bitset
@@ -77,7 +77,7 @@ void FBrief::fromString(FBrief::TDescriptor &a, const std::string &s)
 
 // --------------------------------------------------------------------------
 
-void FBrief::toMat32F(const std::vector<TDescriptor> &descriptors, 
+void FBrief::toMat32F(const std::vector<TDescriptor> &descriptors,
   cv::Mat &mat)
 {
   if(descriptors.empty())
@@ -85,12 +85,12 @@ void FBrief::toMat32F(const std::vector<TDescriptor> &descriptors,
     mat.release();
     return;
   }
-  
+
   const int N = descriptors.size();
   const int L = descriptors[0].size();
-  
+
   mat.create(N, L, CV_32F);
-  
+
   for(int i = 0; i < N; ++i)
   {
     const TDescriptor& desc = descriptors[i];
@@ -99,7 +99,7 @@ void FBrief::toMat32F(const std::vector<TDescriptor> &descriptors,
     {
       *p = (desc[j] ? 1 : 0);
     }
-  } 
+  }
 }
 
 // --------------------------------------------------------------------------

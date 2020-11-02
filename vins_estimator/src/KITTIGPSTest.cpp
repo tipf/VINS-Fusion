@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 	if(file == NULL){
 	    printf("cannot find file: %simage_00/timestamps.txt \n", dataPath.c_str());
 	    ROS_BREAK();
-	    return 0;          
+	    return 0;
 	}
 	vector<double> imageTimeList;
 	int year, month, day;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 		if(file == NULL){
 		    printf("cannot find file: %soxts/timestamps.txt \n", dataPath.c_str());
 		    ROS_BREAK();
-		    return 0;          
+		    return 0;
 		}
 		int year, month, day;
 		int hour, minute;
@@ -102,14 +102,14 @@ int main(int argc, char** argv)
 	double baseTime;
 
 	for (size_t i = 0; i < imageTimeList.size(); i++)
-	{	
+	{
 		if(ros::ok())
 		{
 			if(imageTimeList[0] < GPSTimeList[0])
 				baseTime = imageTimeList[0];
 			else
 				baseTime = GPSTimeList[0];
-			
+
 			//printf("base time is %f\n", baseTime);
 			printf("process image %d\n", (int)i);
 			stringstream ss;
@@ -119,8 +119,8 @@ int main(int argc, char** argv)
 			printf("%s\n", leftImagePath.c_str() );
 			printf("%s\n", rightImagePath.c_str() );
 
-			imLeft = cv::imread(leftImagePath, CV_LOAD_IMAGE_GRAYSCALE );
-			imRight = cv::imread(rightImagePath, CV_LOAD_IMAGE_GRAYSCALE );
+			imLeft = cv::imread(leftImagePath, cv::IMREAD_GRAYSCALE );
+			imRight = cv::imread(rightImagePath, cv::IMREAD_GRAYSCALE );
 
 			double imgTime = imageTimeList[i] - baseTime;
 
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
 			if(GPSFile == NULL){
 			    printf("cannot find file: %s\n", GPSFilePath.c_str());
 			    ROS_BREAK();
-			    return 0;          
+			    return 0;
 			}
 			double lat, lon, alt, roll, pitch, yaw;
 			double vn, ve, vf, vl, vu;
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 			double pos_accuracy, vel_accuracy;
 			double navstat, numsats;
 			double velmode, orimode;
-			
+
 			fscanf(GPSFile, "%lf %lf %lf %lf %lf %lf ", &lat, &lon, &alt, &roll, &pitch, &yaw);
 			//printf("lat:%lf lon:%lf alt:%lf roll:%lf pitch:%lf yaw:%lf \n",  lat, lon, alt, roll, pitch, yaw);
 			fscanf(GPSFile, "%lf %lf %lf %lf %lf ", &vn, &ve, &vf, &vl, &vu);
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 			fscanf(GPSFile, "%lf %lf %lf %lf %lf %lf ", &wx, &wy, &wz, &wf, &wl, &wu);
 			//printf("wx:%lf wy:%lf wz:%lf wf:%lf wl:%lf wu:%lf\n",  wx, wy, wz, wf, wl, wu);
 			fscanf(GPSFile, "%lf %lf %lf %lf %lf %lf ", &pos_accuracy, &vel_accuracy, &navstat, &numsats, &velmode, &orimode);
-			//printf("pos_accuracy:%lf vel_accuracy:%lf navstat:%lf numsats:%lf velmode:%lf orimode:%lf\n", 
+			//printf("pos_accuracy:%lf vel_accuracy:%lf navstat:%lf numsats:%lf velmode:%lf orimode:%lf\n",
 			//	    pos_accuracy, vel_accuracy, navstat, numsats, velmode, orimode);
 
 			std::fclose(GPSFile);
@@ -168,14 +168,14 @@ int main(int argc, char** argv)
 			pubGPS.publish(gps_position);
 
 			estimator.inputImage(imgTime, imLeft, imRight);
-			
+
 			Eigen::Matrix<double, 4, 4> pose;
 			estimator.getPoseInWorldFrame(pose);
 			if(outFile != NULL)
 				fprintf (outFile, "%f %f %f %f %f %f %f %f %f %f %f %f \n",pose(0,0), pose(0,1), pose(0,2),pose(0,3),
 																	       pose(1,0), pose(1,1), pose(1,2),pose(1,3),
 																	       pose(2,0), pose(2,1), pose(2,2),pose(2,3));
-			
+
 			// cv::imshow("leftImage", imLeft);
 			// cv::imshow("rightImage", imRight);
 			// cv::waitKey(2);

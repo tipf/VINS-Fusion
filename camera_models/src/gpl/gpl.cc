@@ -535,7 +535,7 @@ std::vector<cv::Point2i> bresCircle(int x0, int y0, int r)
 	// Find cells intersected by circle with center (x0,y0) and radius r
 
 	std::vector< std::vector<bool> > mask(2 * r + 1);
-	
+
 	for (int i = 0; i < 2 * r + 1; ++i)
 	{
 		mask[i].resize(2 * r + 1);
